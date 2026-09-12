@@ -61,31 +61,33 @@ export default function Layout() {
   }
 
   const linkCls = ({ isActive }: { isActive: boolean }) =>
-    `relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors ${
-      isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-500 hover:text-ink-900 hover:bg-ink-50'
+    `relative flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
+      isActive
+        ? 'bg-brand-50 text-brand-700 shadow-sm'
+        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100/70'
     }`
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-40 border-b border-ink-100 bg-white/85 backdrop-blur-md">
+    <div className="min-h-screen bg-[#f0f2f5]">
+      <header className="sticky top-0 z-40 border-b border-gray-200/60 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <button
-              className="rounded-lg p-2 text-ink-500 hover:bg-ink-50 lg:hidden"
+              className="rounded-xl p-2 text-gray-500 hover:bg-gray-100 lg:hidden transition-colors"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label="Menu"
             >
-              {mobileOpen ? <X /> : <Menu />}
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
             <Link to="/" className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 text-white shadow-soft">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-md">
                 <ShoppingBag size={18} />
               </span>
               <span className="leading-tight">
-                <span className="block text-base font-extrabold tracking-tight text-ink-900">
+                <span className="block text-[15px] font-extrabold tracking-tight text-gray-900">
                   Shein Shop <span className="text-brand-600">Link</span>
                 </span>
-                <span className="hidden text-[10px] font-semibold uppercase tracking-widest text-ink-400 sm:block">
+                <span className="hidden text-[10px] font-semibold uppercase tracking-widest text-gray-400 sm:block">
                   Online Products
                 </span>
               </span>
@@ -98,7 +100,7 @@ export default function Layout() {
                 <item.icon size={16} />
                 {item.label}
                 {typeof item.badge === 'number' && item.badge > 0 && (
-                  <span className="ml-0.5 rounded-full bg-brand-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  <span className="ml-0.5 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white animate-pulse-soft">
                     {item.badge}
                   </span>
                 )}
@@ -110,7 +112,7 @@ export default function Layout() {
             {user ? (
               <>
                 <div className="hidden items-center gap-2.5 sm:flex">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-700 text-xs font-bold text-white">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 text-xs font-bold text-white shadow-md">
                     {user.name
                       .split(' ')
                       .map((n) => n[0])
@@ -118,11 +120,11 @@ export default function Layout() {
                       .join('')}
                   </div>
                   <div className="leading-tight">
-                    <p className="text-sm font-semibold text-ink-800">{user.name}</p>
+                    <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                     <p className="text-[11px] font-medium text-brand-600">{roleLabel(user.role)}</p>
                   </div>
                 </div>
-                <button onClick={handleLogout} className="rounded-xl p-2 text-ink-400 hover:bg-red-50 hover:text-red-600" title="Log out">
+                <button onClick={handleLogout} className="rounded-xl p-2 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-colors" title="Log out">
                   <LogOut size={18} />
                 </button>
               </>
@@ -140,7 +142,7 @@ export default function Layout() {
         </div>
 
         {mobileOpen && (
-          <nav className="border-t border-ink-100 bg-white px-4 py-3 lg:hidden">
+          <nav className="border-t border-gray-200/60 bg-white/95 backdrop-blur-xl px-4 py-3 lg:hidden">
             <div className="flex flex-col gap-1">
               {nav.map((item) => (
                 <NavLink
@@ -149,22 +151,22 @@ export default function Layout() {
                   end={item.to === '/' || item.to === '/admin' || item.to === '/reseller'}
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold ${
-                      isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-600 hover:bg-ink-50'
+                    `flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                      isActive ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-100'
                     }`
                   }
                 >
                   <item.icon size={17} />
                   {item.label}
                   {typeof item.badge === 'number' && item.badge > 0 && (
-                    <span className="ml-auto rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                    <span className="ml-auto rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
                       {item.badge}
                     </span>
                   )}
                 </NavLink>
               ))}
               {user && (
-                <button onClick={handleLogout} className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50">
+                <button onClick={handleLogout} className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 transition-colors">
                   <LogOut size={17} /> Log out
                 </button>
               )}
@@ -178,7 +180,7 @@ export default function Layout() {
       </main>
 
       <footer className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
-        <p className="border-t border-ink-100 pt-6 text-center text-xs text-ink-400">
+        <p className="border-t border-gray-200 pt-6 text-center text-xs text-gray-400">
           By proceeding, you agree to Shein Shop Link Terms of Use and Privacy Policy.
         </p>
       </footer>

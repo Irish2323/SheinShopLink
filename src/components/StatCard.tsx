@@ -23,20 +23,20 @@ export default function StatCard({
   tone?: keyof typeof TONES
 }) {
   return (
-    <div className="card p-5 transition-transform duration-150 hover:-translate-y-0.5">
+    <div className="card card-hover p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-ink-400">
+          <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
             {label}
           </p>
-          <p className="mt-2 text-2xl font-extrabold tracking-tight text-ink-900">
+          <p className="mt-2 text-2xl font-extrabold tracking-tight text-gray-900">
             {value}
           </p>
-          {hint && <p className="mt-1 text-xs font-medium text-ink-400">{hint}</p>}
+          {hint && <p className="mt-1 text-xs font-medium text-gray-400">{hint}</p>}
         </div>
         {icon && (
           <span
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${TONES[tone]} text-white shadow-soft`}
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${TONES[tone]} text-white shadow-lg`}
           >
             {icon}
           </span>

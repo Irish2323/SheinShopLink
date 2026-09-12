@@ -50,7 +50,7 @@ export default function ResellerCatalog() {
 
   return (
     <div>
-      <div className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-700 to-ink-950 px-6 py-8 text-white sm:px-8">
+      <div className="mb-6 overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-gray-900 px-6 py-8 text-white sm:px-8">
         <p className="mb-1 text-xs font-bold uppercase tracking-widest text-white/70">
           Private catalog
         </p>

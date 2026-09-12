@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,10 +7,12 @@
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
   }
   body {
-    @apply bg-ink-50 text-ink-900 font-sans;
+    @apply bg-[#f0f2f5] text-ink-900 font-sans;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
   ::selection {
     @apply bg-brand-600 text-white;
@@ -26,47 +30,68 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-2xl shadow-soft border border-ink-100;
+    @apply bg-white rounded-2xl border border-gray-100;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  }
+  .card-hover {
+    @apply transition-all duration-200;
+  }
+  .card-hover:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.04);
+    transform: translateY(-2px);
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:scale-[0.98] shadow-sm;
+    @apply btn bg-brand-600 text-white hover:bg-brand-700 active:scale-[0.97];
+    box-shadow: 0 2px 8px rgba(147, 51, 234, 0.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
   }
   .btn-secondary {
-    @apply btn bg-white text-ink-800 border border-ink-200 hover:bg-ink-50 active:scale-[0.98];
+    @apply btn bg-white text-ink-800 border border-gray-200 hover:bg-gray-50 active:scale-[0.97];
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   }
   .btn-danger {
-    @apply btn bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 active:scale-[0.98];
+    @apply btn bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 active:scale-[0.97];
   }
   .btn-ghost {
-    @apply btn text-use-ink-700 hover:bg-ink-50;
+    @apply btn text-ink-700 hover:bg-gray-100;
   }
   .input {
-    @apply w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-sm text-ink-900 placeholder:text-ink-300 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition;
+    @apply w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-ink-900 placeholder:text-ink-300 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all duration-200;
+  }
+  .input:hover {
+    @apply border-gray-300;
   }
   .label {
     @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-500;
   }
   .tablehead {
-    @apply bg-ink-50/80 text-[11px] font-bold uppercase tracking-wider text-ink-400;
+    @apply bg-gray-50/80 text-[11px] font-bold uppercase tracking-wider text-ink-400;
   }
   .tablehead th {
     @apply px-4 py-3 text-left;
   }
   .tablerow {
-    @apply border-t border-ink-100 transition-colors hover:bg-ink-50/60;
+    @apply border-t border-gray-100 transition-colors hover:bg-gray-50/60;
   }
   .tablerow td {
-    @apply px-4 py-3 align-middle text-sm;
+    @apply px-4 py-3.5 align-middle text-sm;
+  }
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl;
+    -webkit-backdropdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
   }
 }
 
 @layer utilities {
   .scrollbar-thin::-webkit-scrollbar {
-    height: 8px;
-    width: 8px;
+    height: 6px;
+    width: 6px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
     @apply bg-ink-200 rounded-full;
@@ -79,7 +104,7 @@
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -87,5 +112,18 @@
   }
 }
 .animate-fade-up {
-  animation: fadeUp 0.35s ease both;
+  animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }

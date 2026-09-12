@@ -45,7 +45,7 @@ export default function ShopPage() {
 
   return (
     <div>
-      <div className="mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-700 via-brand-800 to-ink-950 px-6 py-10 text-white sm:px-10">
+      <div className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 px-6 py-10 text-white sm:px-10">
         <p className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold ring-1 ring-white/20">
           New arrivals weekly
         </p>
@@ -58,7 +58,7 @@ export default function ShopPage() {
             : 'Browse the full catalog with trusted retail prices. Sign in to start ordering.'}
         </p>
         {isLoggedIn && isCustomer && (
-          <Link to="/cart" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-brand-700 transition hover:bg-white/90">
+          <Link to="/cart" className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-sm font-bold text-gray-900 transition hover:bg-white/90 shadow-lg">
             <ShoppingBag size={16} /> My Cart
             {cartCount > 0 && (
               <span className="rounded-full bg-brand-600 px-1.5 py-0.5 text-[10px] font-bold text-white">{cartCount}</span>

@@ -30,27 +30,27 @@ export default function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
       <div
-        className="absolute inset-0 bg-ink-950/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
         onClick={onClose}
       />
       <div
-        className={`relative z-10 m-4 w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-lift animate-fade-up`}
+        className={`relative z-10 m-4 w-full ${wide ? 'max-w-3xl' : 'max-w-lg'} max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl animate-fade-up`}
       >
-        <div className="flex items-center justify-between border-b border-ink-100 px-5 py-4">
-          <h2 className="text-base font-bold text-ink-900">{title}</h2>
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+          <h2 className="text-lg font-bold text-gray-900">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-ink-400 hover:bg-ink-50 hover:text-ink-700"
+            className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
             aria-label="Close"
           >
             <X size={18} />
           </button>
         </div>
-        <div className="max-h-[65vh] overflow-y-auto px-5 py-4 scrollbar-thin">
+        <div className="max-h-[65vh] overflow-y-auto px-6 py-5 scrollbar-thin">
           {children}
         </div>
         {footer && (
-          <div className="border-t border-ink-100 bg-ink-50/50 px-5 py-4">
+          <div className="border-t border-gray-100 bg-gray-50/80 px-6 py-4">
             {footer}
           </div>
         )}

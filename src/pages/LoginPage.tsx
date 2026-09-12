@@ -3,22 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { ShoppingBag } from '../components/icons'
 
-const DEMOS = [
-  { label: 'Admin', email: 'admin@resellhub.ph', password: 'admin123', color: 'bg-brand-600' },
-  { label: 'Reseller — Ana', email: 'ana@reseller.ph', password: 'reseller123', color: 'bg-emerald-600' },
-  { label: 'Reseller — Jane', email: 'jane@reseller.ph', password: 'reseller123', color: 'bg-sky-600' },
-  { label: 'Customer', email: 'customer@example.com', password: 'customer123', color: 'bg-ink-600' },
-]
-
 export default function LoginPage() {
   const login = useStore((s) => s.login)
-  const resetDemo = useStore((s) => s.resetDemo)
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [resetMsg, setResetMsg] = useState('')
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -55,61 +46,38 @@ export default function LoginPage() {
     }, 300)
   }
 
-  const demoLogin = (demo: (typeof DEMOS)[number]) => {
-    const ok = login(demo.email, demo.password)
-    if (ok) {
-      const user = useStore.getState().users.find((u) => u.email === demo.email)
-      navigate(user?.role === 'admin' ? '/admin' : user?.role === 'reseller' ? '/reseller' : '/', { replace: true })
-    }
-  }
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-brand-100 px-4">
+    <div className="flex min-h-screen items-center justify-center px-4"
+      style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+      }}
+    >
       <div className="w-full max-w-md animate-fade-up">
-        <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 text-white shadow-lift">
-            <ShoppingBag size={22} />
+        <Link to="/" className="mb-10 flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-white shadow-lg backdrop-blur-sm">
+            <ShoppingBag size={24} />
           </span>
-          <span className="text-xl font-extrabold tracking-tight text-ink-900">
-            Shein Shop <span className="text-brand-600">Link</span>
+          <span className="text-2xl font-extrabold tracking-tight text-white">
+            Shein Shop <span className="text-white/80">Link</span>
           </span>
         </Link>
 
-        <div className="card p-6 sm:p-8">
-          <h1 className="mb-1 text-xl font-extrabold text-ink-900">Sign in</h1>
-          <p className="mb-6 text-sm text-ink-500">
-            Welcome back — sign in below.
-          </p>
-
-          <div className="mb-6 grid grid-cols-2 gap-2">
-            {DEMOS.map((d) => (
-              <button
-                key={d.email}
-                onClick={() => demoLogin(d)}
-                className={`flex items-center gap-2 rounded-xl border border-ink-100 px-3 py-2.5 text-left text-sm font-semibold text-ink-700 transition hover:-translate-y-0.5 hover:shadow-soft active:scale-[0.98]`}
-              >
-                <span className={`inline-flex h-6 w-6 items-center justify-center rounded-lg text-[10px] font-bold text-white ${d.color}`}>
-                  {d.label[0]}
-                </span>
-                {d.label}
-              </button>
-            ))}
+        <div className="rounded-3xl bg-white/95 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-extrabold text-gray-900">Welcome back</h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Sign in to your account to continue
+            </p>
           </div>
 
-          <div className="mb-4 flex items-center gap-3 text-[11px] uppercase tracking-widest text-ink-300">
-            <div className="h-px flex-1 bg-ink-200" />
-            <span>or sign in with email</span>
-            <div className="h-px flex-1 bg-ink-200" />
-          </div>
-
-          <form onSubmit={onSubmit} className="space-y-3.5">
+          <form onSubmit={onSubmit} className="space-y-4">
             {error && (
-              <div className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700 ring-1 ring-red-200">
+              <div className="rounded-xl bg-red-50 p-3.5 text-sm font-medium text-red-600 ring-1 ring-red-100">
                 {error}
               </div>
             )}
             <div>
-              <label className="label">Email</label>
+              <label className="label">Email address</label>
               <input
                 type="email"
                 className="input"
@@ -124,42 +92,44 @@ export default function LoginPage() {
               <input
                 type="password"
                 className="input"
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <button type="submit" disabled={loading} className="w-full btn-primary">
-              {loading ? 'Signing in…' : 'Sign in'}
+            <button type="submit" disabled={loading} className="w-full btn-primary py-3 text-base font-bold">
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Signing in…
+                </span>
+              ) : 'Sign in'}
             </button>
           </form>
+
+          <div className="mt-8 border-t border-gray-100 pt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Don't have an account?{' '}
+              <Link to="/register" className="font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+                Register as customer
+              </Link>
+            </p>
+            <p className="mt-2 text-sm text-gray-500">
+              Want to sell with us?{' '}
+              <Link to="/register/reseller" className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+                Become a reseller
+              </Link>
+            </p>
+          </div>
         </div>
 
-        <p className="mt-4 text-center text-sm text-ink-500">
-          No account?{' '}
-          <Link to="/register" className="font-semibold text-brand-600 hover:text-brand-700">
-            Register as customer
-          </Link>
-          {' · '}
-          <Link to="/register/reseller" className="font-semibold text-emerald-600 hover:text-emerald-700">
-            Become a reseller
-          </Link>
+        <p className="mt-6 text-center text-xs text-white/60">
+          By signing in, you agree to our Terms of Service and Privacy Policy.
         </p>
-
-        <div className="mt-3 text-center">
-          <button
-            onClick={() => {
-              resetDemo()
-              setResetMsg('Demo data restored.')
-              setTimeout(() => setResetMsg(''), 2500)
-            }}
-            className="text-xs font-semibold text-ink-400 underline-offset-2 hover:text-brand-600 hover:underline"
-          >
-            Reset demo data
-          </button>
-          {resetMsg && <p className="mt-1 text-xs font-semibold text-emerald-600">{resetMsg}</p>}
-        </div>
       </div>
     </div>
   )

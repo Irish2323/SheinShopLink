@@ -30,34 +30,40 @@ export default function RegisterResellerPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-brand-100 px-4">
+    <div className="flex min-h-screen items-center justify-center px-4"
+      style={{
+        background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+      }}
+    >
       <div className="w-full max-w-md animate-fade-up">
-        <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-lift">
-            <ShoppingBag size={22} />
+        <Link to="/" className="mb-10 flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-white shadow-lg backdrop-blur-sm">
+            <ShoppingBag size={24} />
           </span>
-          <span className="text-xl font-extrabold tracking-tight text-ink-900">
-            ResellHub<span className="text-brand-600">PH</span>
+          <span className="text-2xl font-extrabold tracking-tight text-white">
+            Shein Shop <span className="text-white/80">Link</span>
           </span>
         </Link>
 
-        <div className="card p-6 sm:p-8">
-          <div className="mb-1 flex items-center gap-2">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-sm">🤝</span>
-            <h1 className="text-xl font-extrabold text-ink-900">Become a Reseller</h1>
+        <div className="rounded-3xl bg-white/95 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+          <div className="mb-8 text-center">
+            <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-2xl">
+              🤝
+            </div>
+            <h1 className="text-2xl font-extrabold text-gray-900">Become a Reseller</h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Register and wait for admin approval before you can start ordering.
+            </p>
           </div>
-          <p className="mb-6 text-sm text-ink-500">
-            Register for a reseller account. The admin will review and approve your application before you can log in.
-          </p>
 
-          <form onSubmit={onSubmit} className="space-y-3.5">
+          <form onSubmit={onSubmit} className="space-y-4">
             {error && (
-              <div className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700 ring-1 ring-red-200">
+              <div className="rounded-xl bg-red-50 p-3.5 text-sm font-medium text-red-600 ring-1 ring-red-100">
                 {error}
               </div>
             )}
             {success && (
-              <div className="rounded-xl bg-emerald-50 p-3 text-sm font-medium text-emerald-700 ring-1 ring-emerald-200">
+              <div className="rounded-xl bg-emerald-50 p-3.5 text-sm font-medium text-emerald-600 ring-1 ring-emerald-100">
                 {success}
               </div>
             )}
@@ -81,8 +87,8 @@ export default function RegisterResellerPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <p className="mt-1 text-[11px] text-ink-400">
-                Use your active email — we'll send approval notifications here.
+              <p className="mt-1 text-[11px] text-gray-400">
+                We'll send approval notifications to this email.
               </p>
             </div>
             <div>
@@ -98,31 +104,35 @@ export default function RegisterResellerPage() {
               />
             </div>
 
-            <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-700 ring-1 ring-amber-200">
+            <div className="rounded-xl bg-amber-50 p-3.5 text-xs text-amber-700 ring-1 ring-amber-100">
               <p className="font-bold">How it works:</p>
-              <ol className="mt-1 list-decimal pl-4 space-y-0.5">
+              <ol className="mt-1.5 list-decimal pl-4 space-y-1">
                 <li>Submit your registration</li>
                 <li>Admin reviews your application</li>
                 <li>Once approved, you can log in and start ordering at wholesale prices</li>
               </ol>
             </div>
 
-            <button type="submit" className="w-full btn-primary bg-emerald-600 hover:bg-emerald-700">
+            <button type="submit" className="w-full bg-emerald-600 text-white hover:bg-emerald-700 btn py-3 text-base font-bold shadow-md">
               Submit application
             </button>
           </form>
-        </div>
 
-        <p className="mt-4 text-center text-sm text-ink-500">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700">
-            Sign in
-          </Link>
-          {' · '}
-          <Link to="/register" className="font-semibold text-ink-500 hover:text-ink-800">
-            Register as customer
-          </Link>
-        </p>
+          <div className="mt-8 border-t border-gray-100 pt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?{' '}
+              <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+                Sign in
+              </Link>
+            </p>
+            <p className="mt-2 text-sm text-gray-500">
+              Just want to shop?{' '}
+              <Link to="/register" className="font-semibold text-ink-500 hover:text-ink-800 transition-colors">
+                Register as customer
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -23,26 +23,32 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-brand-100 px-4">
+    <div className="flex min-h-screen items-center justify-center px-4"
+      style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+      }}
+    >
       <div className="w-full max-w-md animate-fade-up">
-        <Link to="/" className="mb-8 flex items-center justify-center gap-2.5">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-800 text-white shadow-lift">
-            <ShoppingBag size={22} />
+        <Link to="/" className="mb-10 flex items-center justify-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-white shadow-lg backdrop-blur-sm">
+            <ShoppingBag size={24} />
           </span>
-          <span className="text-xl font-extrabold tracking-tight text-ink-900">
-            ResellHub<span className="text-brand-600">PH</span>
+          <span className="text-2xl font-extrabold tracking-tight text-white">
+            Shein Shop <span className="text-white/80">Link</span>
           </span>
         </Link>
 
-        <div className="card p-6 sm:p-8">
-          <h1 className="mb-1 text-xl font-extrabold text-ink-900">Sign up</h1>
-          <p className="mb-6 text-sm text-ink-500">
-            Create a customer account to browse.
-          </p>
+        <div className="rounded-3xl bg-white/95 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-extrabold text-gray-900">Create account</h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Sign up to start shopping
+            </p>
+          </div>
 
-          <form onSubmit={onSubmit} className="space-y-3.5">
+          <form onSubmit={onSubmit} className="space-y-4">
             {error && (
-              <div className="rounded-xl bg-red-50 p-3 text-sm font-medium text-red-700 ring-1 ring-red-200">
+              <div className="rounded-xl bg-red-50 p-3.5 text-sm font-medium text-red-600 ring-1 ring-red-100">
                 {error}
               </div>
             )}
@@ -57,7 +63,7 @@ export default function RegisterPage() {
               />
             </div>
             <div>
-              <label className="label">Email</label>
+              <label className="label">Email address</label>
               <input
                 type="email"
                 className="input"
@@ -79,18 +85,20 @@ export default function RegisterPage() {
                 required
               />
             </div>
-            <button type="submit" className="w-full btn-primary">
+            <button type="submit" className="w-full btn-primary py-3 text-base font-bold">
               Create account
             </button>
           </form>
-        </div>
 
-        <p className="mt-4 text-center text-sm text-ink-500">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700">
-            Sign in
-          </Link>
-        </p>
+          <div className="mt-8 border-t border-gray-100 pt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?{' '}
+              <Link to="/login" className="font-semibold text-brand-600 hover:text-brand-700 transition-colors">
+                Sign in
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -58,11 +58,10 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mt-6 grid gap-5 lg:grid-cols-3">
-        {/* Revenue chart */}
         <div className="card p-5 lg:col-span-2">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-bold text-ink-900">Sales — last 7 days</h2>
-            <span className="text-xs font-semibold text-ink-400">
+            <h2 className="font-bold text-gray-900">Sales — last 7 days</h2>
+            <span className="text-xs font-semibold text-gray-400">
               {peso(m.totalRevenue)} total
             </span>
           </div>
@@ -71,29 +70,28 @@ export default function AdminDashboard() {
               <div key={d.label} className="group flex flex-1 flex-col items-center gap-2">
                 <div className="relative flex w-full flex-1 items-end">
                   <div
-                    className="w-full rounded-t-lg bg-gradient-to-t from-brand-600 to-brand-400 transition-all duration-300 group-hover:from-brand-700 group-hover:to-brand-500"
+                    className="w-full rounded-t-xl bg-gradient-to-t from-brand-600 to-brand-400 transition-all duration-300 group-hover:from-brand-700 group-hover:to-brand-500"
                     style={{ height: `${Math.max((d.value / maxDay) * 100, 4)}%` }}
                     title={peso(d.value)}
                   />
                 </div>
-                <span className="text-[10px] font-semibold text-ink-400">{d.label}</span>
+                <span className="text-[10px] font-semibold text-gray-400">{d.label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Best + top reseller */}
         <div className="space-y-5">
           <div className="card p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-md">
                 <Sparkles size={18} />
               </span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-ink-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
                   Best Selling Product
                 </p>
-                <p className="text-sm font-bold text-ink-900">
+                <p className="text-sm font-bold text-gray-900">
                   {m.bestSelling ? m.bestSelling.name : '—'}
                 </p>
                 {m.bestSelling && (
@@ -106,14 +104,14 @@ export default function AdminDashboard() {
           </div>
           <div className="card p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md">
                 <Users size={18} />
               </span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-ink-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
                   Top Reseller
                 </p>
-                <p className="text-sm font-bold text-ink-900">
+                <p className="text-sm font-bold text-gray-900">
                   {m.topReseller ? m.topReseller.name : '—'}
                 </p>
                 {m.topReseller && (
@@ -126,18 +124,18 @@ export default function AdminDashboard() {
           </div>
           <div className="card p-5">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 text-white">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-md">
                 <LayoutIcon size={18} />
               </span>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-ink-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
                   Category Mix
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {m.perCategory.slice(0, 4).map((c) => (
                     <span
                       key={c.category}
-                      className="rounded-full bg-ink-50 px-2 py-0.5 text-[11px] font-semibold text-ink-600 ring-1 ring-ink-100"
+                      className="rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-semibold text-gray-600"
                     >
                       {c.category} · {c.count}
                     </span>
@@ -149,11 +147,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent orders */}
       <div className="card mt-6 overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4">
-          <h2 className="font-bold text-ink-900">Recent orders</h2>
-          <Link to="/admin/orders" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <h2 className="font-bold text-gray-900">Recent orders</h2>
+          <Link to="/admin/orders" className="text-sm font-semibold text-brand-600 hover:text-brand-700 transition-colors">
             View all →
           </Link>
         </div>
@@ -171,14 +168,14 @@ export default function AdminDashboard() {
             <tbody>
               {m.recentOrders.map((o) => (
                 <tr key={o.id} className="tablerow">
-                  <td className="font-bold text-ink-900">
+                  <td className="font-bold text-gray-900">
                     <Link to="/admin/orders" className="text-brand-600 hover:underline">
                       {o.id}
                     </Link>
                   </td>
-                  <td className="font-medium text-ink-700">{o.resellerName}</td>
-                  <td className="text-ink-500">{timeAgo(o.createdAt)}</td>
-                  <td className="font-bold text-ink-900">{peso(revenueOf(o))}</td>
+                  <td className="font-medium text-gray-700">{o.resellerName}</td>
+                  <td className="text-gray-500">{timeAgo(o.createdAt)}</td>
+                  <td className="font-bold text-gray-900">{peso(revenueOf(o))}</td>
                   <td>
                     <StatusBadge status={o.status} />
                   </td>
@@ -186,7 +183,7 @@ export default function AdminDashboard() {
               ))}
               {m.recentOrders.length === 0 && (
                 <tr className="tablerow">
-                  <td colSpan={5} className="py-8 text-center text-sm text-ink-400">
+                  <td colSpan={5} className="py-8 text-center text-sm text-gray-400">
                     No orders yet.
                   </td>
                 </tr>

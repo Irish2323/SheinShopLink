@@ -38,8 +38,8 @@ export default function CustomerCart() {
 
   const total = lines.reduce((s, l) => s + l.lineTotal, 0)
 
-  const submit = () => {
-    const res = placeOrder(notes)
+  const submit = async () => {
+    const res = await placeOrder(notes)
     setFlash(res.message)
     if (res.ok) {
       setNotes('')

@@ -222,14 +222,6 @@ export default function ResellerCatalog() {
                   <span className="font-medium text-emerald-800">Your wholesale price</span>
                   <span className="font-extrabold text-emerald-700">{peso(selectedPrice)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium text-emerald-800">Suggested retail</span>
-                  <span className="font-bold text-ink-900">{peso(selected.regularPrice)}</span>
-                </div>
-                <div className="flex justify-between border-t border-emerald-200 pt-1.5 text-sm">
-                  <span className="font-semibold text-emerald-800">Potential profit</span>
-                  <span className="font-extrabold text-emerald-600">{peso(selected.regularPrice - selectedPrice)}</span>
-                </div>
               </div>
 
               <button

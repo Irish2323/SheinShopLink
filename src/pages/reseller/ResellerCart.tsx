@@ -41,8 +41,6 @@ export default function ResellerCart() {
   )
 
   const total = lines.reduce((s, l) => s + l.lineTotal, 0)
-  const retailTotal = lines.reduce((s, l) => s + l.retailValue, 0)
-  const potentialProfit = retailTotal - total
 
   const submit = () => {
     const res = placeOrder(notes)
@@ -120,16 +118,8 @@ export default function ResellerCart() {
             <h2 className="mb-4 font-bold text-ink-900">Summary</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-ink-500">Wholesale total (you pay)</span>
+                <span className="text-ink-500">Total (you pay)</span>
                 <span className="font-extrabold text-ink-900">{peso(total)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-ink-500">Retail value</span>
-                <span className="font-semibold text-ink-400">{peso(retailTotal)}</span>
-              </div>
-              <div className="flex justify-between border-t border-ink-100 pt-2">
-                <span className="font-semibold text-emerald-700">Potential profit</span>
-                <span className="font-extrabold text-emerald-600">+{peso(potentialProfit)}</span>
               </div>
             </div>
             <div className="mt-4">

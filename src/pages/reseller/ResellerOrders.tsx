@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { peso, fmtDateTime } from '../../lib/format'
-import { profitOf, revenueOf } from '../../lib/metrics'
+import { revenueOf } from '../../lib/metrics'
 import PageHeader from '../../components/PageHeader'
 import StatusBadge from '../../components/StatusBadge'
 import Modal from '../../components/Modal'
@@ -60,9 +60,6 @@ export default function ResellerOrders() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-sm font-extrabold text-ink-900">{peso(revenueOf(o))}</p>
-                      <p className="text-xs font-semibold text-emerald-600">
-                        +{peso(profitOf(o))} est. profit
-                      </p>
                     </div>
                     <StatusBadge status={o.status} />
                   </div>
@@ -105,10 +102,6 @@ export default function ResellerOrders() {
                     <div className="mt-3 flex justify-between border-t border-ink-100 pt-3 text-sm font-bold">
                       <span className="text-ink-600">Total you pay</span>
                       <span className="text-ink-900">{peso(revenueOf(o))}</span>
-                    </div>
-                    <div className="mt-2 flex justify-between text-sm font-bold">
-                      <span className="text-emerald-700">Estimated profit at retail</span>
-                      <span className="text-emerald-600">{peso(profitOf(o))}</span>
                     </div>
                     {o.status === 'pending' && (
                       <button

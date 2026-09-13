@@ -1,13 +1,17 @@
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+console.log('[supabase] URL raw:', JSON.stringify(supabaseUrl))
+console.log('[supabase] KEY raw:', supabaseKey ? supabaseKey.slice(0, 15) + '...' : '(empty)')
+
 if (!supabaseUrl || !supabaseKey) {
   throw new Error(
-    'Missing Supabase credentials. Copy .env.example to .env and fill in your Supabase project URL and publishable key.',
+    'Missing Supabase credentials. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify env vars, then redeploy.',
   )
 }
 
 const BASE = supabaseUrl.replace(/\/$/, '') + '/rest/v1'
+console.log('[supabase] BASE:', BASE)
 
 const headers = {
   apikey: supabaseKey,
@@ -22,14 +26,18 @@ async function request<T = any>(
   body?: any,
 ): Promise<T> {
   const url = `${BASE}/${table}${query ? '?' + query : ''}`
+  console.log('[supabase]', method, url)
   const res = await fetch(url, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
   })
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: res.statusText }))
-    throw new Error(err.message || `HTTP ${res.status}`)
+    const errBody = await res.text()
+    console.error('[supabase] ERROR', res.status, errBody)
+    let parsed: any = {}
+    try { parsed = JSON.parse(errBody) } catch {}
+    throw new Error(parsed.message || `HTTP ${res.status}`)
   }
   const text = await res.text()
   return text ? JSON.parse(text) : ([] as any)

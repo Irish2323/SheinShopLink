@@ -1,9 +1,6 @@
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-console.log('[supabase] URL raw:', JSON.stringify(supabaseUrl))
-console.log('[supabase] KEY raw:', supabaseKey ? supabaseKey.slice(0, 15) + '...' : '(empty)')
-
 if (!supabaseUrl || !supabaseKey) {
   throw new Error(
     'Missing Supabase credentials. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Netlify env vars, then redeploy.',
@@ -11,7 +8,6 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 const BASE = supabaseUrl.replace(/\/$/, '') + '/rest/v1'
-console.log('[supabase] BASE:', BASE)
 
 const headers = {
   apikey: supabaseKey,
@@ -26,7 +22,6 @@ async function request<T = any>(
   body?: any,
 ): Promise<T> {
   const url = `${BASE}/${table}${query ? '?' + query : ''}`
-  console.log('[supabase]', method, url)
   const res = await fetch(url, {
     method,
     headers,
@@ -34,7 +29,6 @@ async function request<T = any>(
   })
   if (!res.ok) {
     const errBody = await res.text()
-    console.error('[supabase] ERROR', res.status, errBody)
     let parsed: any = {}
     try { parsed = JSON.parse(errBody) } catch {}
     throw new Error(parsed.message || `HTTP ${res.status}`)

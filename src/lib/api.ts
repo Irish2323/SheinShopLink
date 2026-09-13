@@ -1,16 +1,15 @@
-import { supabase } from './supabase'
+import { db } from './supabase'
 import type { User, Product, CustomPrice, Order } from './types'
 
 // ─── USERS ─────────────────────────────────────────────
 
 export async function fetchUsers(): Promise<User[]> {
-  const { data, error } = await supabase.from('users').select('*')
-  if (error) throw error
-  return (data ?? []) as User[]
+  const data = await db.select('users', 'select=*')
+  return (Array.isArray(data) ? data : []) as User[]
 }
 
 export async function createUser(user: User): Promise<void> {
-  const { error } = await supabase.from('users').insert({
+  await db.insert('users', {
     id: user.id,
     name: user.name,
     email: user.email,
@@ -18,31 +17,24 @@ export async function createUser(user: User): Promise<void> {
     role: user.role,
     active: user.active,
   })
-  if (error) throw error
 }
 
 export async function updateUser(
   id: string,
   patch: Partial<Omit<User, 'id'>>,
 ): Promise<void> {
-  const { error } = await supabase.from('users').update(patch).eq('id', id)
-  if (error) throw error
+  await db.update('users', patch, `id=eq.${encodeURIComponent(id)}`)
 }
 
 export async function deleteUser(id: string): Promise<void> {
-  const { error } = await supabase.from('users').delete().eq('id', id)
-  if (error) throw error
+  await db.delete('users', `id=eq.${encodeURIComponent(id)}`)
 }
 
 // ─── PRODUCTS ──────────────────────────────────────────
 
 export async function fetchProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return (data ?? []).map(rowToProduct)
+  const data = await db.select('products', 'select=*&order=created_at.desc')
+  return (Array.isArray(data) ? data : []).map(rowToProduct)
 }
 
 function rowToProduct(row: any): Product {
@@ -63,7 +55,7 @@ function rowToProduct(row: any): Product {
 }
 
 export async function createProduct(product: Product): Promise<void> {
-  const { error } = await supabase.from('products').insert({
+  await db.insert('products', {
     id: product.id,
     name: product.name,
     description: product.description,
@@ -77,7 +69,6 @@ export async function createProduct(product: Product): Promise<void> {
     default_reseller_price: product.defaultResellerPrice,
     created_at: new Date(product.createdAt).toISOString(),
   })
-  if (error) throw error
 }
 
 export async function updateProduct(
@@ -97,21 +88,18 @@ export async function updateProduct(
   if (patch.defaultResellerPrice !== undefined)
     dbPatch.default_reseller_price = patch.defaultResellerPrice
 
-  const { error } = await supabase.from('products').update(dbPatch).eq('id', id)
-  if (error) throw error
+  await db.update('products', dbPatch, `id=eq.${encodeURIComponent(id)}`)
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  const { error } = await supabase.from('products').delete().eq('id', id)
-  if (error) throw error
+  await db.delete('products', `id=eq.${encodeURIComponent(id)}`)
 }
 
 // ─── CUSTOM PRICES ─────────────────────────────────────
 
 export async function fetchCustomPrices(): Promise<CustomPrice[]> {
-  const { data, error } = await supabase.from('custom_prices').select('*')
-  if (error) throw error
-  return (data ?? []).map((row: any) => ({
+  const data = await db.select('custom_prices', 'select=*')
+  return (Array.isArray(data) ? data : []).map((row: any) => ({
     productId: row.product_id,
     resellerId: row.reseller_id,
     price: row.price,
@@ -119,36 +107,28 @@ export async function fetchCustomPrices(): Promise<CustomPrice[]> {
 }
 
 export async function upsertCustomPrice(cp: CustomPrice): Promise<void> {
-  const { error } = await supabase
-    .from('custom_prices')
-    .upsert(
-      { product_id: cp.productId, reseller_id: cp.resellerId, price: cp.price },
-      { onConflict: 'product_id,reseller_id' },
-    )
-  if (error) throw error
+  await db.upsert(
+    'custom_prices',
+    { product_id: cp.productId, reseller_id: cp.resellerId, price: cp.price },
+    'product_id,reseller_id',
+  )
 }
 
 export async function deleteCustomPrice(
   productId: string,
   resellerId: string,
 ): Promise<void> {
-  const { error } = await supabase
-    .from('custom_prices')
-    .delete()
-    .eq('product_id', productId)
-    .eq('reseller_id', resellerId)
-  if (error) throw error
+  await db.delete(
+    'custom_prices',
+    `product_id=eq.${encodeURIComponent(productId)}&reseller_id=eq.${encodeURIComponent(resellerId)}`,
+  )
 }
 
 // ─── ORDERS ────────────────────────────────────────────
 
 export async function fetchOrders(): Promise<Order[]> {
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) throw error
-  return (data ?? []).map(rowToOrder)
+  const data = await db.select('orders', 'select=*&order=created_at.desc')
+  return (Array.isArray(data) ? data : []).map(rowToOrder)
 }
 
 function rowToOrder(row: any): Order {
@@ -165,7 +145,7 @@ function rowToOrder(row: any): Order {
 }
 
 export async function createOrder(order: Order): Promise<void> {
-  const { error } = await supabase.from('orders').insert({
+  await db.insert('orders', {
     id: order.id,
     reseller_id: order.resellerId,
     reseller_name: order.resellerName,
@@ -175,36 +155,25 @@ export async function createOrder(order: Order): Promise<void> {
     rejected_reason: order.rejectedReason ?? null,
     created_at: new Date(order.createdAt).toISOString(),
   })
-  if (error) throw error
 }
 
 export async function updateOrder(
   id: string,
   patch: { status?: string; rejected_reason?: string | null },
 ): Promise<void> {
-  const { error } = await supabase.from('orders').update(patch).eq('id', id)
-  if (error) throw error
+  await db.update('orders', patch, `id=eq.${encodeURIComponent(id)}`)
 }
 
 export async function deleteOrder(id: string): Promise<void> {
-  const { error } = await supabase.from('orders').delete().eq('id', id)
-  if (error) throw error
+  await db.delete('orders', `id=eq.${encodeURIComponent(id)}`)
 }
 
 // ─── META ──────────────────────────────────────────────
 
 export async function getNextOrderSeq(): Promise<number> {
-  const { data, error } = await supabase
-    .from('meta')
-    .select('order_seq')
-    .eq('id', 'counters')
-    .single()
-  if (error) throw error
-  const next = (data.order_seq ?? 1006) + 1
-  const { error: upErr } = await supabase
-    .from('meta')
-    .update({ order_seq: next })
-    .eq('id', 'counters')
-  if (upErr) throw upErr
+  const data = await db.select('meta', 'select=order_seq&id=eq.counters')
+  const row = Array.isArray(data) ? data[0] : data
+  const next = ((row as any)?.order_seq ?? 1006) + 1
+  await db.update('meta', { order_seq: next }, 'id=eq.counters')
   return next
 }

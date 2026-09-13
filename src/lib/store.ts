@@ -77,7 +77,8 @@ export const useStore = create<AppStore>()((set, get) => ({
   currentUserId: null,
 
   hydrate: async () => {
-    await seedDatabase()
+    const seedResult = await seedDatabase()
+    console.log('[hydrate] seed:', seedResult)
     const [users, products, customPrices, orders] = await Promise.all([
       api.fetchUsers(),
       api.fetchProducts(),

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import { useStore } from './lib/store'
@@ -45,10 +45,37 @@ function ScrollToTop() {
 function AppLoader({ children }: { children: React.ReactNode }) {
   const initialized = useStore((s) => s.initialized)
   const hydrate = useStore((s) => s.hydrate)
+  const [error, setError] = useState<string | null>(null)
+  const [retrying, setRetrying] = useState(false)
 
   useEffect(() => {
-    hydrate()
+    hydrate().catch((err) => {
+      console.error('[AppLoader] hydrate error:', err)
+      setError(err?.message ?? 'Failed to connect to database.')
+    })
   }, [hydrate])
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#f0f2f5]">
+        <div className="max-w-md text-center animate-fade-up">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 text-red-600 shadow-lg">
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="mb-2 text-lg font-bold text-gray-800">Connection Error</h2>
+          <p className="mb-4 text-sm text-gray-500">{error}</p>
+          <button
+            onClick={() => { setError(null); setRetrying(true); hydrate().catch((err) => { setError(err?.message ?? 'Failed'); setRetrying(false); }) }}
+            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700"
+          >
+            {retrying ? 'Retrying…' : 'Retry'}
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   if (!initialized) {
     return (

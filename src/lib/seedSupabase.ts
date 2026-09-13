@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { db } from './supabase'
 import {
   seedUsers,
   seedProducts,
@@ -11,11 +11,8 @@ export async function seedDatabase(): Promise<{
   message: string
 }> {
   try {
-    const { count } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true })
-
-    if (count && count > 0) {
+    const count = await db.count('users')
+    if (count > 0) {
       return { ok: true, message: 'Already seeded.' }
     }
 
@@ -27,8 +24,7 @@ export async function seedDatabase(): Promise<{
       role: u.role,
       active: u.active,
     }))
-    const { error: uErr } = await supabase.from('users').insert(usersToInsert)
-    if (uErr) throw new Error(`Users: ${uErr.message}`)
+    await db.insert('users', usersToInsert)
 
     const productsToInsert = seedProducts.map((p) => ({
       id: p.id,
@@ -44,16 +40,14 @@ export async function seedDatabase(): Promise<{
       default_reseller_price: p.defaultResellerPrice,
       created_at: new Date(p.createdAt).toISOString(),
     }))
-    const { error: pErr } = await supabase.from('products').insert(productsToInsert)
-    if (pErr) throw new Error(`Products: ${pErr.message}`)
+    await db.insert('products', productsToInsert)
 
     const cpToInsert = seedCustomPrices.map((cp) => ({
       product_id: cp.productId,
       reseller_id: cp.resellerId,
       price: cp.price,
     }))
-    const { error: cpErr } = await supabase.from('custom_prices').insert(cpToInsert)
-    if (cpErr) throw new Error(`Custom prices: ${cpErr.message}`)
+    await db.insert('custom_prices', cpToInsert)
 
     const ordersToInsert = seedOrders.map((o) => ({
       id: o.id,
@@ -65,13 +59,9 @@ export async function seedDatabase(): Promise<{
       rejected_reason: o.rejectedReason ?? null,
       created_at: new Date(o.createdAt).toISOString(),
     }))
-    const { error: oErr } = await supabase.from('orders').insert(ordersToInsert)
-    if (oErr) throw new Error(`Orders: ${oErr.message}`)
+    await db.insert('orders', ordersToInsert)
 
-    const { error: mErr } = await supabase
-      .from('meta')
-      .insert({ id: 'counters', order_seq: 1006 })
-    if (mErr) throw new Error(`Meta: ${mErr.message}`)
+    await db.insert('meta', { id: 'counters', order_seq: 1006 })
 
     return { ok: true, message: 'Database seeded.' }
   } catch (err) {

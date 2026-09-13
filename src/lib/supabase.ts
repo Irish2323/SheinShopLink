@@ -87,7 +87,7 @@ export const storage = {
       const err = await res.text()
       throw new Error(`Upload failed: ${err}`)
     }
-    return `${STORAGE_BASE}/public/${bucket}/${path}`
+    return `${STORAGE_BASE}/object/public/${bucket}/${path}`
   },
 
   async remove(bucket: string, paths: string[]): Promise<void> {

@@ -215,7 +215,7 @@ export default function AdminOrders() {
               {viewing.items.map((it, i) => (
                 <div key={i} className="flex items-center gap-3 rounded-xl border border-ink-100 p-3">
                   <ProductImage
-                    product={{ id: it.productId, name: it.productName, category: '', image: it.image, createdAt: 0, available: true, stockType: 'on_hand' as const, variant: it.variant, sizes: [{ name: it.size, available: true }], description: '', regularPrice: it.retailPrice, defaultResellerPrice: it.unitPrice }}
+                    product={{ id: it.productId, name: it.productName, category: '', image: it.image, images: it.images ?? [], createdAt: 0, available: true, stockType: 'on_hand' as const, variant: it.variant, sizes: [{ name: it.size, available: true }], description: '', regularPrice: it.retailPrice, defaultResellerPrice: it.unitPrice }}
                     className="h-14 w-14 rounded-lg"
                   />
                   <div className="min-w-0 flex-1">

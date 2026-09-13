@@ -70,3 +70,34 @@ export const db = {
     return match ? parseInt(match[1], 10) : 0
   },
 }
+
+const STORAGE_BASE = supabaseUrl.replace(/\/$/, '') + '/storage/v1'
+
+export const storage = {
+  async upload(bucket: string, path: string, file: File): Promise<string> {
+    const res = await fetch(`${STORAGE_BASE}/object/${bucket}/${path}`, {
+      method: 'POST',
+      headers: {
+        apikey: supabaseKey,
+        'Content-Type': file.type,
+      },
+      body: file,
+    })
+    if (!res.ok) {
+      const err = await res.text()
+      throw new Error(`Upload failed: ${err}`)
+    }
+    return `${STORAGE_BASE}/public/${bucket}/${path}`
+  },
+
+  async remove(bucket: string, paths: string[]): Promise<void> {
+    await fetch(`${STORAGE_BASE}/object/${bucket}`, {
+      method: 'DELETE',
+      headers: {
+        apikey: supabaseKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(paths),
+    })
+  },
+}

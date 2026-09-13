@@ -286,6 +286,7 @@ export const useStore = create<AppStore>()((set, get) => ({
           size: c.size,
           variant: product.variant,
           image: product.image,
+          images: product.images ?? [],
           quantity: c.quantity,
           unitPrice,
           retailPrice: product.regularPrice,

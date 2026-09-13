@@ -34,6 +34,7 @@ export async function seedDatabase(): Promise<{
       variant: p.variant,
       sizes: p.sizes,
       image: p.image,
+      images: p.images ?? [],
       available: p.available,
       stock_type: p.stockType,
       regular_price: p.regularPrice,

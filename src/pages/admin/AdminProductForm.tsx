@@ -3,12 +3,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useStore } from '../../lib/store'
 import { peso } from '../../lib/format'
 import { DEFAULT_SIZES, type SizeOption, type StockType } from '../../lib/types'
+import { storage } from '../../lib/supabase'
 import PageHeader from '../../components/PageHeader'
-import { ArrowLeft, Edit, Plus, Trash, Upload } from '../../components/icons'
+import { ArrowLeft, Plus, Upload } from '../../components/icons'
 
 const CATEGORY_OPTIONS = ['Dresses', 'Tops', 'Bottoms', 'Sets', 'Outerwear', 'Shoes', 'Accessories']
 const MAX_FILE_SIZE = 2 * 1024 * 1024
 const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif'
+const BUCKET = 'product-images'
+const MAX_IMAGES = 5
 
 const inputCls = 'input'
 const labelCls = 'label'
@@ -26,7 +29,7 @@ export default function AdminProductForm() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState(CATEGORY_OPTIONS[0])
   const [variant, setVariant] = useState('')
-  const [image, setImage] = useState('')
+  const [images, setImages] = useState<string[]>([])
   const [sizes, setSizes] = useState<SizeOption[]>([])
   const [customSizeInput, setCustomSizeInput] = useState('')
   const [available, setAvailable] = useState(true)
@@ -36,6 +39,7 @@ export default function AdminProductForm() {
   const [error, setError] = useState('')
   const [dragOver, setDragOver] = useState(false)
   const [imgError, setImgError] = useState('')
+  const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -45,7 +49,8 @@ export default function AdminProductForm() {
       setDescription(editing.description)
       setCategory(editing.category)
       setVariant(editing.variant)
-      setImage(editing.image)
+      const allImgs = [editing.image, ...(editing.images ?? [])].filter(Boolean)
+      setImages(allImgs)
       setSizes(editing.sizes.length > 0 ? editing.sizes : DEFAULT_SIZES.map((n) => ({ name: n, available: true })))
       setAvailable(editing.available)
       setStockType(editing.stockType ?? 'on_hand')
@@ -56,7 +61,7 @@ export default function AdminProductForm() {
       setDescription('')
       setCategory(CATEGORY_OPTIONS[0])
       setVariant('')
-      setImage('')
+      setImages([])
       setSizes(DEFAULT_SIZES.map((n) => ({ name: n, available: true })))
       setAvailable(true)
       setStockType('on_hand')
@@ -72,7 +77,8 @@ export default function AdminProductForm() {
       category,
       variant,
       sizes,
-      image,
+      image: images[0] ?? '',
+      images,
       available,
       stockType,
       regularPrice: Number(regularPrice) || 0,
@@ -80,40 +86,67 @@ export default function AdminProductForm() {
       createdAt: 0,
       id: 'preview',
     }),
-    [name, description, category, variant, sizes, image, available, stockType, regularPrice, resellerPrice],
+    [name, description, category, variant, sizes, images, available, stockType, regularPrice, resellerPrice],
   )
 
-  function readFile(file: File) {
+  async function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return
     setImgError('')
-    if (!file.type.startsWith('image/')) {
-      setImgError('Please select an image file.')
+    const remaining = MAX_IMAGES - images.length
+    if (remaining <= 0) {
+      setImgError(`Maximum ${MAX_IMAGES} images allowed.`)
       return
     }
-    if (file.size > MAX_FILE_SIZE) {
-      setImgError(`Image must be under ${Math.round(MAX_FILE_SIZE / 1024 / 1024)} MB.`)
-      return
+    const toUpload = Array.from(files).slice(0, remaining)
+    for (const file of toUpload) {
+      if (!file.type.startsWith('image/')) {
+        setImgError('Please select image files only.')
+        return
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        setImgError(`Each image must be under ${Math.round(MAX_FILE_SIZE / 1024 / 1024)} MB.`)
+        return
+      }
     }
-    const reader = new FileReader()
-    reader.onload = () => setImage(reader.result as string)
-    reader.readAsDataURL(file)
+    setUploading(true)
+    try {
+      const newUrls: string[] = []
+      for (const file of toUpload) {
+        const ext = file.name.split('.').pop() || 'jpg'
+        const path = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+        const url = await storage.upload(BUCKET, path, file)
+        newUrls.push(url)
+      }
+      setImages((prev) => [...prev, ...newUrls])
+    } catch (err: any) {
+      setImgError(err.message || 'Upload failed.')
+    } finally {
+      setUploading(false)
+    }
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (file) readFile(file)
+    handleFiles(e.target.files)
     e.target.value = ''
   }
 
   function handleDrop(e: React.DragEvent) {
     e.preventDefault()
     setDragOver(false)
-    const file = e.dataTransfer.files?.[0]
-    if (file) readFile(file)
+    handleFiles(e.dataTransfer.files)
   }
 
-  function removeImage() {
-    setImage('')
-    setImgError('')
+  function removeImage(idx: number) {
+    setImages((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  function moveImage(from: number, to: number) {
+    setImages((prev) => {
+      const arr = [...prev]
+      const [item] = arr.splice(from, 1)
+      arr.splice(to, 0, item)
+      return arr
+    })
   }
 
   function toggleSize(name: string) {
@@ -173,7 +206,8 @@ export default function AdminProductForm() {
       description: description.trim(),
       category,
       variant: variant.trim(),
-      image: image.trim(),
+      image: images[0] ?? '',
+      images: images,
       sizes,
       available,
       stockType,
@@ -203,83 +237,103 @@ export default function AdminProductForm() {
         <div className="space-y-4">
           {/* image upload */}
           <div className="card overflow-hidden">
-            <p className="px-4 pt-4 text-xs font-bold uppercase tracking-wider text-ink-400">
-              Product image
-            </p>
+            <div className="flex items-center justify-between px-4 pt-4">
+              <p className="text-xs font-bold uppercase tracking-wider text-ink-400">
+                Product images ({images.length}/{MAX_IMAGES})
+              </p>
+            </div>
+
             <div className="p-4">
-              {image ? (
-                <div className="group relative">
-                  <img
-                    src={image}
-                    alt={name || 'Product preview'}
-                    className="aspect-[4/5] w-full rounded-xl object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-xl bg-ink-950/0 opacity-0 transition group-hover:bg-ink-950/40 group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => fileRef.current?.click()}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink-800 shadow transition hover:bg-white"
-                      title="Change image"
+              {/* Thumbnail strip */}
+              {images.length > 0 && (
+                <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
+                  {images.map((src, idx) => (
+                    <div
+                      key={idx}
+                      className="group relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 border-ink-200"
                     >
-                      <Edit size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-red-600 shadow transition hover:bg-white"
-                      title="Remove image"
-                    >
-                      <Trash size={16} />
-                    </button>
-                  </div>
-                  <span className="absolute right-2 top-2 rounded-full bg-ink-950/60 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
-                    Uploaded
-                  </span>
+                      <img src={src} alt="" className="h-full w-full object-cover" />
+                      <div className="absolute inset-0 flex items-center justify-center gap-1 rounded-lg bg-ink-950/0 opacity-0 transition group-hover:bg-ink-950/50 group-hover:opacity-100">
+                        {idx > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => moveImage(idx, idx - 1)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-ink-700 text-xs font-bold shadow"
+                            title="Move left"
+                          >
+                            ‹
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-red-600 text-xs font-bold shadow"
+                          title="Remove"
+                        >
+                          ×
+                        </button>
+                        {idx < images.length - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => moveImage(idx, idx + 1)}
+                            className="flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-ink-700 text-xs font-bold shadow"
+                            title="Move right"
+                          >
+                            ›
+                          </button>
+                        )}
+                      </div>
+                      {idx === 0 && (
+                        <span className="absolute bottom-0.5 left-0.5 rounded bg-ink-950/60 px-1 py-px text-[8px] font-bold text-white">
+                          Main
+                        </span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ) : (
+              )}
+
+              {/* Upload area */}
+              {images.length < MAX_IMAGES ? (
                 <div
                   onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={handleDrop}
                   onClick={() => fileRef.current?.click()}
-                  className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition ${
+                  className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-6 text-center transition ${
                     dragOver
                       ? 'border-brand-500 bg-brand-50'
                       : 'border-ink-200 bg-ink-50 hover:border-brand-400 hover:bg-brand-50/50'
                   }`}
                 >
-                  <span className={`flex h-14 w-14 items-center justify-center rounded-2xl transition ${dragOver ? 'bg-brand-100 text-brand-600' : 'bg-ink-100 text-ink-400'}`}>
-                    <Upload size={26} />
+                  <span className={`flex h-12 w-12 items-center justify-center rounded-2xl transition ${dragOver ? 'bg-brand-100 text-brand-600' : 'bg-ink-100 text-ink-400'}`}>
+                    <Upload size={22} />
                   </span>
                   <div>
                     <p className="text-sm font-semibold text-ink-700">
-                      {dragOver ? 'Drop here' : 'Click or drag an image'}
+                      {uploading ? 'Uploading…' : 'Click or drag images'}
                     </p>
                     <p className="mt-0.5 text-xs text-ink-400">
-                      JPEG, PNG, WebP, GIF — up to {Math.round(MAX_FILE_SIZE / 1024 / 1024)} MB
+                      Up to {MAX_IMAGES - images.length} more · JPEG, PNG, WebP · {Math.round(MAX_FILE_SIZE / 1024 / 1024)} MB each
                     </p>
                   </div>
                 </div>
-              )}
-            </div>
-            <input ref={fileRef} type="file" accept={ACCEPT} onChange={handleFileChange} className="hidden" />
-            <div className="border-t border-ink-100 px-4 py-3">
-              <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-ink-400">
-                Or paste image URL
-              </label>
-              <input
-                className={inputCls}
-                placeholder="https://…/dress.jpg"
-                value={image.startsWith('data:') ? '' : image}
-                onChange={(e) => { setImgError(''); setImage(e.target.value) }}
-                disabled={image.startsWith('data:')}
-              />
-              {image.startsWith('data:') && (
-                <p className="mt-1.5 text-[11px] text-ink-400">
-                  File upload in use — remove it first to paste a URL.
+              ) : (
+                <p className="py-3 text-center text-xs text-ink-400">
+                  Maximum {MAX_IMAGES} images reached. Remove one to add another.
                 </p>
               )}
             </div>
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept={ACCEPT}
+              multiple
+              onChange={handleFileChange}
+              className="hidden"
+            />
+
             {imgError && (
               <div className="mx-4 mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600">
                 {imgError}
@@ -368,7 +422,7 @@ export default function AdminProductForm() {
               Preview
             </p>
             <div className="flex items-center gap-3">
-              {image ? <img src={image} alt="" className="h-14 w-14 rounded-lg object-cover" /> : null}
+              {images[0] ? <img src={images[0]} alt="" className="h-14 w-14 rounded-lg object-cover" /> : null}
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-ink-900">{preview.name}</p>
                 <p className="text-lg font-extrabold text-brand-600">{peso(Number(regularPrice) || 0)}</p>
@@ -505,8 +559,8 @@ export default function AdminProductForm() {
 
           <div className="flex justify-end gap-3 border-t border-ink-100 pt-5">
             <Link to="/admin/products" className="btn-secondary">Cancel</Link>
-            <button type="submit" className="btn-primary">
-              {editing ? 'Save changes' : 'Create product'}
+            <button type="submit" className="btn-primary" disabled={uploading}>
+              {uploading ? 'Uploading…' : editing ? 'Save changes' : 'Create product'}
             </button>
           </div>
         </div>

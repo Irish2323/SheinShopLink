@@ -33,6 +33,7 @@ export interface Product {
   variant: string
   sizes: SizeOption[]
   image: string
+  images?: string[]
   available: boolean
   stockType: StockType
   regularPrice: number
@@ -58,6 +59,7 @@ export interface OrderItem {
   size: string
   variant: string
   image: string
+  images?: string[]
   quantity: number
   unitPrice: number
   retailPrice: number

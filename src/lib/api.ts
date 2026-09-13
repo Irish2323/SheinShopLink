@@ -46,6 +46,7 @@ function rowToProduct(row: any): Product {
     variant: row.variant,
     sizes: row.sizes ?? [],
     image: row.image,
+    images: row.images ?? [],
     available: row.available,
     stockType: row.stock_type,
     regularPrice: row.regular_price,
@@ -63,6 +64,7 @@ export async function createProduct(product: Product): Promise<void> {
     variant: product.variant,
     sizes: product.sizes,
     image: product.image,
+    images: product.images ?? [],
     available: product.available,
     stock_type: product.stockType,
     regular_price: product.regularPrice,
@@ -82,6 +84,7 @@ export async function updateProduct(
   if (patch.variant !== undefined) dbPatch.variant = patch.variant
   if (patch.sizes !== undefined) dbPatch.sizes = patch.sizes
   if (patch.image !== undefined) dbPatch.image = patch.image
+  if (patch.images !== undefined) dbPatch.images = patch.images
   if (patch.available !== undefined) dbPatch.available = patch.available
   if (patch.stockType !== undefined) dbPatch.stock_type = patch.stockType
   if (patch.regularPrice !== undefined) dbPatch.regular_price = patch.regularPrice

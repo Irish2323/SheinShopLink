@@ -186,3 +186,15 @@ export const Calculator = (p: P) => (
     <line x1="12" y1="18" x2="12" y2="18.01" />
   </svg>
 )
+
+export const ChevronLeft = (p: P) => (
+  <svg {...base(p)}>
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+)
+
+export const ChevronRight = (p: P) => (
+  <svg {...base(p)}>
+    <polyline points="9 18 15 12 9 6" />
+  </svg>
+)
